@@ -276,7 +276,13 @@ void printSymbol(SYMBOL s,char* t)
 		printf("Assign\n");
 	}
 	else{
-		printf("%s\n",t);
+		int l=strlen(t);
+		int i;
+		printf("%c",t[0]);
+		for(i=1;i<l;i++){
+			printf("%c",tolower(t[i]));
+		}
+		printf("\n");
 	}
 }
 
