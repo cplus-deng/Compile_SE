@@ -127,9 +127,9 @@ int main(int argc,char *argv[]) {
 		strcpy(File,argv[1]);
 	}
 	else{
-		strcpy(File,"test.txt");
-		//perror("No Input!");
-		//return -1;
+		//strcpy(File,"test.txt");
+		perror("No Input!");
+		return -1;
 	}
 	in=fopen(File,"r");
 	if(in==NULL) {
@@ -138,10 +138,10 @@ int main(int argc,char *argv[]) {
 	}
 	if(fgets(buf,MaxSize,in)==EOF) return -1;
 	//______________________________________Unix___________________
-	//buf[strlen(buf)-2]='#';
+	buf[strlen(buf)-2]='#';
 	//______________________________________Windows__________________
-	buf[strlen(buf)-1]='#';
-	buf[strlen(buf)]='\n';
+	//buf[strlen(buf)-1]='#';
+	//buf[strlen(buf)]='\n';
 	//__________________________________________________________________
 	push(s);
 	//printf("%s\n",buf);
@@ -156,10 +156,10 @@ int main(int argc,char *argv[]) {
 			continue;
 		}
 		else if(transAll(ch)==error){
-			printf("Why E? :%c\n",ch);
-			if(ch=='\n'||ch=='\r'){
-				printf("回车\n");
-			}
+			//printf("Why E? :%c\n",ch);
+			//if(ch=='\n'||ch=='\r'){
+			//	printf("回车\n");
+			//}
 			printf("E\n");
 			return -1;
 		}
