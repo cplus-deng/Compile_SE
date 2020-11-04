@@ -136,7 +136,7 @@ int main(int argc,char *argv[]) {
 		perror("Open Fail!");
 		return -1;
 	}
-	if(fgets(buf,MaxSize,in)==EOF) return -1;
+	if(fgets(buf,MaxSize,in)==NULL) return -1;
 	//______________________________________Unix___________________
 	buf[strlen(buf)-2]='#';
 	//______________________________________Windows__________________
@@ -149,7 +149,7 @@ int main(int argc,char *argv[]) {
 	init_matrix();
 	while(buf[index]!='\n'&&buf[index]!='\r'){
 		char ch=buf[index];
-		//Îª·ÇÖÕ½á·û 
+		//ä¸ºéç»ˆç»“ç¬¦ 
 		if(transAll(ch)==Vn){
 			push(Vn);
 			index++;
@@ -158,19 +158,19 @@ int main(int argc,char *argv[]) {
 		else if(transAll(ch)==error){
 			//printf("Why E? :%c\n",ch);
 			//if(ch=='\n'||ch=='\r'){
-			//	printf("»Ø³µ\n");
+			//	printf("å›è½¦\n");
 			//}
 			printf("E\n");
 			return -1;
 		}
-		//ÎªÖÕ½á·û 
+		//ä¸ºç»ˆç»“ç¬¦ 
 		else{
 			int priority=pri(top(),trans(ch));
-			//Èç¹ûÕ»¶¥ÓÅÏÈ¼¶µÍÓÚch,ÔòÈëÕ» 
+			//å¦‚æœæ ˆé¡¶ä¼˜å…ˆçº§ä½äºch,åˆ™å…¥æ ˆ 
 			if(priority==-1||priority==0){
 				push(trans(ch));
 			}
-			//Èç¹ûÕ»¶¥ÓÅÏÈ¼¶¸ß£¬Ôò¹éÔ¼ 
+			//å¦‚æœæ ˆé¡¶ä¼˜å…ˆçº§é«˜ï¼Œåˆ™å½’çº¦ 
 			else if(priority==1){
 				if(reduce()==0){
 					printf("RE\n");
