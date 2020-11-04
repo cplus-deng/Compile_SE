@@ -78,9 +78,9 @@ void init_matrix(){
 	pri_matrix[plus][plus]=1;pri_matrix[plus][multi]=-1;pri_matrix[plus][i]=-1;pri_matrix[plus][left]=-1;pri_matrix[plus][right]=1;pri_matrix[plus][s]=1;
 	pri_matrix[multi][plus]=1;pri_matrix[multi][multi]=1;pri_matrix[multi][i]=-1;pri_matrix[multi][left]=-1;pri_matrix[multi][right]=1;pri_matrix[multi][s]=1;
 	pri_matrix[i][plus]=1;pri_matrix[i][multi]=1;pri_matrix[i][i]=-2;pri_matrix[i][left]=-2;pri_matrix[i][right]=1;pri_matrix[i][s]=1;
-	pri_matrix[left][plus]=-1;pri_matrix[left][multi]=-1;pri_matrix[left][i]=-1;pri_matrix[left][left]=-1;pri_matrix[left][right]=0;pri_matrix[left][s]=-2;
+	pri_matrix[left][plus]=-1;pri_matrix[left][multi]=-1;pri_matrix[left][i]=-1;pri_matrix[left][left]=-1;pri_matrix[left][right]=0;pri_matrix[left][s]=1;
 	pri_matrix[right][plus]=1;pri_matrix[right][multi]=1;pri_matrix[right][i]=-2;pri_matrix[right][left]=-2;pri_matrix[right][right]=1;pri_matrix[right][s]=1;
-	pri_matrix[s][plus]=-1;pri_matrix[s][multi]=-1;pri_matrix[s][i]=-1;pri_matrix[s][left]=-1;pri_matrix[s][right]=-1;pri_matrix[s][s]=-2;
+	pri_matrix[s][plus]=-1;pri_matrix[s][multi]=-1;pri_matrix[s][i]=-1;pri_matrix[s][left]=-1;pri_matrix[s][right]=-1;pri_matrix[s][s]=-1;
 }
 int pri(sym inStack,sym outStack){
 	return pri_matrix[inStack][outStack];
