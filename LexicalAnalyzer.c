@@ -3,7 +3,7 @@
 #include<ctype.h>
 #include<stdbool.h>
 #define FileNameSize 50
-#define MaxSize 100+10
+#define MaxSize 1000+10
 #define VtSize 8
 char buf[MaxSize];
 int m_index=0;
