@@ -1,407 +1,215 @@
-#include<string.h> 
-#include<ctype.h>
 #include<stdio.h>
+#include<string.h>
+#include<ctype.h>
 #include<stdbool.h>
-#include<stdlib.h>
-#define TokenSize 20
-#define FileNameSize 20
-
-#define READ if(!read()) break;
-
-char 	token[TokenSize];
-int 	counter;
-char 	ch;
-int 	num;
-FILE	*in;
-enum 	sym{
-	Ident, 	//标识符  0 
-	Begin,	//1 保留字 
-	End,	//2 
-	For,	//3 
-	If,		//4 
-	Then,	//5 
-	Else, 	//6 保留字 
-	Int, 	//无符号整数 
-	Colon,
-	Plus,
-	Star,
-	Comma,
-	LParenthesis,
-	RParenthesis,
-	Assign, //赋值符号 := (kao 
-	Unknown
+#define FileNameSize 50
+#define MaxSize 100+10
+#define VtSize 8
+char buf[MaxSize];
+int index=0;
+enum symbol{
+	Vn=0,
+	plus,
+	multi,
+	i,
+	left,
+	right,
+	s,
+	error
 };
-typedef enum sym SYMBOL;
-SYMBOL symbol;
-bool isSpace()
-{
-	if(ch-' '==0)
-	{
-		return true;
-	}
-	return false;
-}
+typedef enum symbol sym;
 
-bool isTab()
-{
-	if(ch-'\t'==0)
-	{
-		return true;
-	}
-	return false;
-}
+sym reduce_i(sym topOfStack);
+sym reduce_exp(sym a1,sym a2,sym a3);
 
-bool isNewline()
-{
-	if(ch-'\n'==0)
-	{
-		return true;
-	}
-	return false;
+sym stack[MaxSize];
+int Top=0;
+bool isEmpty(){
+	return Top==0;
 }
-bool isEnter()
-{
-	if(ch-'\r'==0)
-	{
-		return true;
+sym top(){
+	if(stack[Top-1]!=Vn){
+		return stack[Top-1];
 	}
-	return false;
-}
-
-int clearToken()
-{
-	memset(token,'\0',TokenSize);
-	return 1;
-}
-
-bool isLetter() 
-{
-	if((ch>='a'&&ch<='z')||(ch>='A'&&ch<='Z'))
-	{
-		return true;
-	}
-	return false;
-}
-
-bool isDigit()
-{
-	if(ch>='0'&&ch<='9')
-	{
-		return true;
-	}
-	return false;
-}
-
-bool isColon()
-{
-	if(ch==':')
-	{
-		return true;
-	}
-	return false;
-}
-
-bool isComma()
-{
-	if(ch==',')
-	{
-		return true;
-	}
-	return false;
-}
-
-bool isSemi()
-{
-	if(ch==';')
-	{
-		return true;
-	}
-	return false;
-}
-
-bool isEqu()
-{
-	if(ch=='=')
-	{
-		return true;
-	}
-	return false;
-}
-
-bool isPlus()
-{
-	if(ch=='+')
-	{
-		return true;
-	}
-	return false;
-}
-
-bool isMinus()
-{
-	if(ch=='-')
-	{
-		return true;
-	}
-	return false;
-}
-
-bool isDivi()
-{
-	if(ch=='/')
-	{
-		return true;
-	}
-	return false;
-}
-
-bool isStar()
-{
-	if(ch=='*') 
-	{
-		return true;
-	}
-	return false;
-}
-
-bool isLpar()
-{
-	if(ch=='(')
-	{
-		return true;
-	}
-	return false;
-}
-
-bool isRpar()
-{
-	if(ch==')')
-	{
-		return true;
-	}
-	return false;
-}
-
-int catToken()
-{
-	token[counter++]=ch;
-	token[counter]='\0';
-	return counter;
-}
-
-void retract()
-{
-	fseek(in,-1,SEEK_CUR);
-}
-bool read()
-{
-	ch=fgetc(in);
-	if(feof(in))
-		return false;
-	//printf("%c ",ch);
-	return true;
-}
-int reserve(char* t,int c)
-{
-	if(strcmp(t,"BEGIN")==0) return 1;
-	else if(strcmp(t,"END")==0) return 2;
-	else if(strcmp(t,"FOR")==0) return 3;
-	else if(strcmp(t,"IF")==0)  return 4;
-	else if(strcmp(t,"THEN")==0) return 5;
-	else if(strcmp(t,"ELSE")==0) return 6;
-	else return 0;
-}
-int SourceCodeLength()
-{
-	fseek(in,0,SEEK_SET);
-	char c=getc(in);
-	int length=0;
-	while(!feof(in))
-	{
-		length++;
-		c=getc(in);
-	}
-	fseek(in,0,SEEK_SET);
-	return length;
-}
-void printSymbol(SYMBOL s,char* t)
-{
-	// 0标识符 7无符号整数
-	if(s==Ident) 
-	{
-		printf("Ident(%s)\n",t);
-	}
-	else if(s==Int)
-	{
-		char* p=t;
-		while(*p=='0') p++;
-		if(strlen(p)==0){
-			printf("Int(0)\n");
-		}
-		else{
-			printf("Int(%s)\n",p);
-		}
-		
-	}
-	else if(s==Unknown)
-	{
-		printf("Unknown\n");
-	}
-	else if(s==Colon)
-	{
-		printf("Colon\n");
-	}
-	else if(s==Plus)
-	{
-		printf("Plus\n");
-	}
-	else if(s==Star)
-	{
-		printf("Star\n");
-	}
-	else if(s==Comma)
-	{
-		printf("Comma\n");
-	}
-	else if(s==LParenthesis)
-	{
-		printf("LParenthesis\n");
-	}
-	else if(s==RParenthesis)
-	{
-		printf("RParenthesis\n");
-	}
-	else if(s==Assign) 
-	{
-		printf("Assign\n");
-	}
-	else{
-		int l=strlen(t);
-		int i;
-		printf("%c",t[0]);
-		for(i=1;i<l;i++){
-			printf("%c",tolower(t[i]));
-		}
-		printf("\n");
+	else {
+		return stack[Top-2];
 	}
 }
-
-int main(int argc, char *argv[])
-{
-	char filename[FileNameSize];
-	if(argc>1)
-	{
-		strcpy(filename,argv[1]);
-	}
-	else
-	{
-		//printf("No input.\n");
-		//return -1;
-		strcpy(filename,"test.txt");
-	}
-	
-	in=fopen(filename,"r");
-	if(in==NULL)
-	{
-		perror("open fail.");
-		return -1;
-	}
-	//read();
-	while(1)
-	{
-		clearToken();counter=0; 
-		//getchar();
-		//READ
-		if(!read()) break;
-		while(isSpace() || isNewline() || isTab() || isEnter())
-		{
-			//READ
-			if(!read()) break;
-		}
-		if(feof(in)) 
-		{
+void push(sym a){
+	stack[Top++]=a;
+if(a!=Vn){
+	char p='#';
+	switch(a){
+		case plus:{
+			p='+';
 			break;
 		}
-		if(isLetter())
-		{
-			while(isLetter() || isDigit())
-			{
-				catToken();
-				//READ
-				if(!read()) break;
-			}
-			if(feof(in)) 
-			{
-				break;
-			}
-			retract();
-			int resultValue=reserve(token,counter);
-			if(resultValue==0) symbol=Ident; //标识符 
-			else symbol=resultValue; 		 //保留字 
+		case multi:{
+			p='*';
+			break;
 		}
-		else if(isDigit())
-		{
-			while(isDigit())
-			{
-				catToken();
-				//READ
-				if(!read()) break;
-			}
-			if(feof(in)) 
-			{
-				break;
-			}
-			retract();
-			symbol=Int;
+		case i:{
+			p='i';
+			break;
 		}
-		else if(isColon())
-		{
-			catToken();
-			//READ
-			if(!read()) break;
-			if(isEqu()) {
-				symbol=Assign;
-				catToken();
+		case left:{
+			p='(';
+			break;
+		}
+		case right:{
+			p=')';
+			break;
+		}
+		default:{
+			break;
+		}
+	}
+	if(p!='#'){
+		printf("I%c\n",p);
+	}
+}
+}
+sym pop(){
+	return stack[--Top];
+}
+int pri_matrix[VtSize][VtSize];
+
+void init_matrix(){
+	pri_matrix[plus][plus]=1;pri_matrix[plus][multi]=-1;pri_matrix[plus][i]=-1;pri_matrix[plus][left]=-1;pri_matrix[plus][right]=1;pri_matrix[plus][s]=1;
+	pri_matrix[multi][plus]=1;pri_matrix[multi][multi]=1;pri_matrix[multi][i]=-1;pri_matrix[multi][left]=-1;pri_matrix[multi][right]=1;pri_matrix[multi][s]=1;
+	pri_matrix[i][plus]=1;pri_matrix[i][multi]=1;pri_matrix[i][i]=-2;pri_matrix[i][left]=-2;pri_matrix[i][right]=1;pri_matrix[i][s]=1;
+	pri_matrix[left][plus]=-1;pri_matrix[left][multi]=-1;pri_matrix[left][i]=-1;pri_matrix[left][left]=-1;pri_matrix[left][right]=0;pri_matrix[left][s]=1;
+	pri_matrix[right][plus]=1;pri_matrix[right][multi]=1;pri_matrix[right][i]=-2;pri_matrix[right][left]=-2;pri_matrix[right][right]=1;pri_matrix[right][s]=1;
+	pri_matrix[s][plus]=-1;pri_matrix[s][multi]=-1;pri_matrix[s][i]=-1;pri_matrix[s][left]=-1;pri_matrix[s][right]=-1;pri_matrix[s][s]=-1;
+}
+int pri(sym inStack,sym outStack){
+	return pri_matrix[inStack][outStack];
+}
+sym trans(char ch){
+	if(ch=='i'){
+		return i;
+	}
+	else if(ch=='+'){
+		return plus;
+	}
+	else if(ch=='*'){
+		return multi;
+	}
+	else if(ch=='('){
+		return left;
+	}
+	else if(ch==')'){
+		return right;
+	}
+	else if(ch=='#'){
+		return s;
+	}
+	else{
+		return error;
+	}
+}
+sym transAll(char ch){
+	if(ch=='E'||ch=='F'||ch=='T'||ch=='N'){
+		return Vn;
+	}
+	else if(ch=='#'){
+		return s;
+	}
+	else{
+		return trans(ch);
+	}
+}
+int reduce();
+int main(int argc,char *argv[]) {
+	FILE* in;
+	char File[FileNameSize];
+	if(argc>1){
+		strcpy(File,argv[1]);
+	}
+	else{
+		strcpy(File,"test.txt");
+		//perror("No Input!");
+		//return -1;
+	}
+	in=fopen(File,"r");
+	if(in==NULL) {
+		perror("Open Fail!");
+		return -1;
+	}
+	if(fgets(buf,MaxSize,in)==EOF) return -1;
+	//______________________________________Unix___________________
+	//buf[strlen(buf)-2]='#';
+	//______________________________________Windows__________________
+	buf[strlen(buf)-1]='#';
+	buf[strlen(buf)]='\n';
+	//__________________________________________________________________
+	push(s);
+	//printf("%s\n",buf);
+	//printf("%d\n",strlen(buf));
+	init_matrix();
+	while(buf[index]!='\n'&&buf[index]!='\r'){
+		char ch=buf[index];
+		//为非终结符 
+		if(transAll(ch)==Vn){
+			push(Vn);
+			index++;
+			continue;
+		}
+		else if(transAll(ch)==error){
+			printf("Why E? :%c\n",ch);
+			if(ch=='\n'||ch=='\r'){
+				printf("回车\n");
 			}
-			else {
-				retract();symbol=Colon;
-			}
-				
+			printf("E\n");
+			return -1;
 		}
-		else if(isPlus()) 	{
-			symbol=Plus;
-			catToken();
-		}
-		//else if(isMinus()) 	symbol=Minus;
-		else if(isStar()) {
-			symbol=Star;
-			catToken();
-		}
-		else if(isLpar()){
-			symbol=LParenthesis;
-			catToken();
-		} 	
-		else if(isRpar()) {
-			symbol=RParenthesis;
-			catToken();
-		} 	
-		else if(isComma()) {
-			symbol=Comma;
-			catToken();
-		}	
+		//为终结符 
 		else{
-			symbol=Unknown;
-			printf("Unknown\n");
-			exit(0);
-		} 
-		
-		printSymbol(symbol,token);
-		
+			int priority=pri(top(),trans(ch));
+			//如果栈顶优先级低于ch,则入栈 
+			if(priority==-1||priority==0){
+				push(trans(ch));
+			}
+			//如果栈顶优先级高，则归约 
+			else if(priority==1){
+				if(reduce()==0){
+					printf("RE\n");
+					return -1;
+				}
+				printf("R\n");
+				continue;
+			}
+			else{
+				printf("E\n");
+				return -1;
+			}
+		}
+		index++;
 	}
-	if(strlen(token)>0)
-	{
-		printSymbol(symbol,token);
-	}
-	fclose(in);return 0;
 }
 
+int reduce(){
+	//i->N
+	if(Top-1>0 && stack[Top-1]==i){
+		stack[Top-1]=Vn;
+	}
+	//N*N->N
+	else if(Top-3>0 && stack[Top-1]==Vn && stack[Top-2]==multi && stack[Top-3]==Vn){
+		stack[Top-3]=Vn;
+		Top-=2;
+	}
+	//N+N->N
+	else if(Top-3>0 && stack[Top-1]==Vn && stack[Top-2]==plus && stack[Top-3]==Vn){
+		stack[Top-3]=Vn;
+		Top-=2;
+	}
+	//(N)->N
+	else if(Top-3>0 && stack[Top-1]==right && stack[Top-2]==Vn && stack[Top-3]==left){
+		stack[Top-3]=Vn;
+		Top-=2;
+	}
+	else{
+		return 0;
+	}
+	return 1;
+}
