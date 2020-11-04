@@ -161,7 +161,7 @@ int main(int argc,char *argv[]) {
 			//	printf("回车\n");
 			//}
 			printf("E\n");
-			return -1;
+			return 0;
 		}
 		//为终结符 
 		else{
@@ -174,14 +174,14 @@ int main(int argc,char *argv[]) {
 			else if(priority==1){
 				if(reduce()==0){
 					printf("RE\n");
-					return -1;
+					return 0;
 				}
 				printf("R\n");
 				continue;
 			}
 			else{
 				printf("E\n");
-				return -1;
+				return 0;
 			}
 		}
 		m_index++;
