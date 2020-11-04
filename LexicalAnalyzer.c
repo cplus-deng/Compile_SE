@@ -6,7 +6,7 @@
 #define MaxSize 100+10
 #define VtSize 8
 char buf[MaxSize];
-int index=0;
+int m_index=0;
 enum symbol{
 	Vn=0,
 	plus,
@@ -147,12 +147,12 @@ int main(int argc,char *argv[]) {
 	//printf("%s\n",buf);
 	//printf("%d\n",strlen(buf));
 	init_matrix();
-	while(buf[index]!='\n'&&buf[index]!='\r'){
-		char ch=buf[index];
+	while(buf[m_index]!='\n'&&buf[m_index]!='\r'){
+		char ch=buf[m_index];
 		//为非终结符 
 		if(transAll(ch)==Vn){
 			push(Vn);
-			index++;
+			m_index++;
 			continue;
 		}
 		else if(transAll(ch)==error){
@@ -184,7 +184,7 @@ int main(int argc,char *argv[]) {
 				return -1;
 			}
 		}
-		index++;
+		m_index++;
 	}
 }
 
